@@ -34,43 +34,37 @@ var settings = {
   }
 })();
 
-var Point = (function () {
-  function Point(x, y) {
+class Point {
+  constructor(x, y) {
     this.x = typeof x !== 'undefined' ? x : 0;
     this.y = typeof y !== 'undefined' ? y : 0;
   }
-
-  Point.prototype.clone = function () {
+  clone() {
     return new Point(this.x, this.y);
-  };
-
-  Point.prototype.length = function (length) {
+  }
+  length(length) {
     if (typeof length == 'undefined') return Math.sqrt(this.x * this.x + this.y * this.y);
     this.normalize();
     this.x *= length;
     this.y *= length;
     return this;
-  };
-
-  Point.prototype.normalize = function () {
+  }
+  normalize() {
     var length = this.length();
     this.x /= length;
     this.y /= length;
     return this;
-  };
+  }
+}
 
-  return Point;
-})();
-
-var Particle = (function () {
-  function Particle() {
+class Particle {
+  constructor() {
     this.position = new Point();
     this.velocity = new Point();
     this.acceleration = new Point();
     this.age = 0;
   }
-
-  Particle.prototype.initialize = function (x, y, dx, dy) {
+  initialize(x, y, dx, dy) {
     this.position.x = x;
     this.position.y = y;
     this.velocity.x = dx;
@@ -78,26 +72,23 @@ var Particle = (function () {
     this.acceleration.x = dx * settings.particles.effect;
     this.acceleration.y = dy * settings.particles.effect;
     this.age = 0;
-  };
-
-  Particle.prototype.update = function (deltaTime) {
+  }
+  update(deltaTime) {
     this.position.x += this.velocity.x * deltaTime;
     this.position.y += this.velocity.y * deltaTime;
     this.velocity.x += this.acceleration.x * deltaTime;
     this.velocity.y += this.acceleration.y * deltaTime;
     this.age += deltaTime;
-  };
-
-  Particle.prototype.draw = function (context, image) {
+  }
+  draw(context, image) {
     function ease(t) {
       return --t * t * t + 1;
     }
     var size = image.width * ease(this.age / settings.particles.duration);
     context.globalAlpha = 1 - this.age / settings.particles.duration;
     context.drawImage(image, this.position.x - size / 2, this.position.y - size / 2, size, size);
-  };
-  return Particle;
-})();
+  }
+}
 
 var ParticlePool = (function () {
   var particles,
